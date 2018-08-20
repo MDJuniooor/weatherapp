@@ -7,7 +7,9 @@ const API_KEY = "348d898faa3b0d6db306ea6c58b7f816";
 export default class App extends React.Component {
   state = {
     isLoaded: false,
-    erorr: null
+    erorr: null,
+    temperature: null,
+    name: null
   };
   componentDidMount(){
     navigator.geolocation.getCurrentPosition(
@@ -24,16 +26,21 @@ export default class App extends React.Component {
     fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&APPID=${API_KEY}`)
     .then(response => response.json())
     .then(json => {
-      console.log(json)
+      console.log(json);
+      this.setState({
+        temperature:json.main.temp,
+        name:json.weather[0].main,
+        isLoaded: true
+      })
     })
   }
   render() {
-    const { isLoaded, error } = this.state;
+    const { isLoaded, error, temperature, name } = this.state;
     return (
       <View style={styles.container}>
         <StatusBar hidden={true} />
         {isLoaded ? (
-          <Weather />
+          <Weather weatherName={name} temp={Math.floor(temperature -273.15)} />
         ) :
           <View style={styles.loading}>
             <Text style={styles.loadingText}>Getting the fucking weather</Text>
